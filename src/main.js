@@ -1,4 +1,4 @@
-import FilterView from './view/filters-view.js';
+import FiltersView from './view/filters-view.js';
 import ContentPresenter from './presenter/content-presenter.js';
 import {render} from './render.js';
 
@@ -7,6 +7,6 @@ const siteContentWrapperElement = document.querySelector('.trip-events');
 
 const contentPresenter = new ContentPresenter();
 
-render(new FilterView(), siteFilterElement);
+render(new FiltersView(), siteFilterElement);
 
 contentPresenter.init(siteContentWrapperElement);

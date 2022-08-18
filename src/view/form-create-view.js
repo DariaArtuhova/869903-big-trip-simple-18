@@ -144,7 +144,7 @@ const createNewFormTemplate = () => (
 </li>`
 );
 
-export default class FormView {
+export default class FormCreateView {
   getTemplate() {
     return createNewFormTemplate();
   }
