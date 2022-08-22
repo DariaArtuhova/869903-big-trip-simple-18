@@ -2,7 +2,7 @@ import SortView from '../view/sort-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import TripListView from '../view/trip-list-view.js';
 import RoutePointView from '../view/route-point-view';
-import NoPointsView from "../view/no-points-view";
+import NoPointsView from '../view/no-points-view';
 import {render} from '../render.js';
 
 export default class ContentPresenter {
@@ -26,7 +26,7 @@ export default class ContentPresenter {
         this.#renderTask(this.#boardTasks[i]);
       }
     }
-  }
+  };
 
   #renderTask = (point, offers) => {
     const pointComponent = new RoutePointView(point, offers);
