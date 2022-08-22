@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
-import {destinations} from "../fish/destination";
-import {offer} from "../fish/offers";
+import {destinations} from '../fish/destination';
+import {offer} from '../fish/offers';
 
 const createFormCreateTemplate = (task) => {
   const {type, city, dateFrom, dateTo, price, destination, pointOffer} = task;

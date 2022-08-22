@@ -27,12 +27,12 @@ export default class ContentPresenter {
     const formEditView = new FormEditView(point, offers);
 
     const openFormEdit = () => {
-      this.#tripListComponent.element.replaceChild(formEditView.element, pointComponent.element)
-    }
+      this.#tripListComponent.element.replaceChild(formEditView.element, pointComponent.element);
+    };
 
     const openRoutePoint = () => {
-      this.#tripListComponent.element.replaceChild(pointComponent.element, formEditView.element)
-    }
+      this.#tripListComponent.element.replaceChild(pointComponent.element, formEditView.element);
+    };
 
     const onEscKeyDown = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -51,13 +51,13 @@ export default class ContentPresenter {
       evt.preventDefault();
       openRoutePoint();
       document.addEventListener('keydown', onEscKeyDown);
-    })
+    });
 
     formEditView.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       openRoutePoint();
     });
 
-      render(pointComponent, this.#tripListComponent.element);
+    render(pointComponent, this.#tripListComponent.element);
   };
 
 }
