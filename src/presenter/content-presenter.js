@@ -2,6 +2,7 @@ import SortView from '../view/sort-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import TripListView from '../view/trip-list-view.js';
 import RoutePointView from '../view/route-point-view';
+import NoPointsView from '../view/no-points-view';
 import {render} from '../render.js';
 
 export default class ContentPresenter {
@@ -10,15 +11,20 @@ export default class ContentPresenter {
   #tripListComponent = new TripListView();
   #boardTasks = [];
 
+
   init = (mainContainer, pointsModel) => {
     this.#pointsModel = pointsModel;
     this.#boardTasks = [...this.#pointsModel.points];
 
-    render(this.#sortFormComponent, mainContainer);
-    render(this.#tripListComponent, mainContainer);
+    if (this.#boardTasks.every((task) => task.isArchive)) {
+      render(new NoPointsView(), mainContainer);
+    } else {
+      render(this.#sortFormComponent, mainContainer);
+      render(this.#tripListComponent, mainContainer);
 
-    for (let i = 0; i < this.#boardTasks.length; i++) {
-      this.#renderTask(this.#boardTasks[i]);
+      for (let i = 0; i < this.#boardTasks.length; i++) {
+        this.#renderTask(this.#boardTasks[i]);
+      }
     }
   };
 
