@@ -44,25 +44,30 @@ ${selectedOffers}
 };
 
 export default class RoutePointView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+  #element = null;
+
   constructor(point, offers, description) {
-    this.point = point;
-    this.destination = description;
-    this.offers = offers;
+    this.#point = point;
+    this.#destination = description;
+    this.#offers = offers;
   }
 
-  getTemplate() {
-    return createRoutePointTemplate(this.point, this.destination, this.offers);
+  get template() {
+    return createRoutePointTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
