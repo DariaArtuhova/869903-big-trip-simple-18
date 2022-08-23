@@ -1,4 +1,3 @@
-import SortView from '../view/sort-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import TripListView from '../view/trip-list-view.js';
 import RoutePointView from '../view/route-point-view';
@@ -8,7 +7,6 @@ import {render} from '../framework/render';
 export default class ContentPresenter {
   #pointsModel = null;
   #mainContainer = null;
-  #sortFormComponent = new SortView();
   #tripListComponent = new TripListView();
   #boardTasks = [];
 
@@ -65,7 +63,6 @@ export default class ContentPresenter {
     if (this.#boardTasks.every((task) => task.isArchive)) {
       render(new NoPointsView(), this.#mainContainer);
     } else {
-      render(this.#sortFormComponent, this.#mainContainer);
       render(this.#tripListComponent, this.#mainContainer);
 
       for (let i = 0; i < this.#boardTasks.length; i++) {
