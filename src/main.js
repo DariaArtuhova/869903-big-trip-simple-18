@@ -1,14 +1,14 @@
 import FiltersView from './view/filters-view.js';
 import ContentPresenter from './presenter/content-presenter.js';
 import PointsModel from './model/model.js';
-import {render} from './render.js';
+import {render} from './framework/render';
 
 const siteFilterElement = document.querySelector('.trip-controls__filters');
 const siteContentWrapperElement = document.querySelector('.trip-events');
 
 const pointsModel = new PointsModel();
-const contentPresenter = new ContentPresenter();
+const contentPresenter = new ContentPresenter(siteContentWrapperElement, pointsModel);
 
 render(new FiltersView(), siteFilterElement);
 
-contentPresenter.init(siteContentWrapperElement, pointsModel);
+contentPresenter.init();

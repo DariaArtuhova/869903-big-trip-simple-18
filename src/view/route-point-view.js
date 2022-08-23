@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {offer} from '../fish/offers';
-import {humanizePointDueDate} from '../utils';
+import {humanizePointDueDate} from '../utils/task';
 
 const createRoutePointTemplate = (task) => {
   const {type, city, price, hoursFrom, hoursTo} = task;
@@ -43,13 +43,13 @@ ${selectedOffers}
   );
 };
 
-export default class RoutePointView {
+export default class RoutePointView extends AbstractView{
   #point = null;
   #destination = null;
   #offers = null;
-  #element = null;
 
   constructor(point, offers, description) {
+    super();
     this.#point = point;
     this.#destination = description;
     this.#offers = offers;
@@ -59,15 +59,15 @@ export default class RoutePointView {
     return createRoutePointTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setOpenClickHandler = (callback) => {
+    this._callback.openClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
+  };
 
-    return this.#element;
-  }
+  #openClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openClick();
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+
 }

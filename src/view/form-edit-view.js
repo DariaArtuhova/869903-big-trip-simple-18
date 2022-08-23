@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {destinations} from '../fish/destination';
 import {offer} from '../fish/offers';
 
@@ -89,13 +89,13 @@ ${descriptionComponent}
   );
 };
 
-export default class FormEditView {
+export default class FormEditView extends AbstractView{
   #point = null;
   #destination = null;
   #offers = null;
-  #element = null;
 
   constructor(point, destination, offers) {
+    super();
     this.#point = point;
     this.#destination = destination;
     this.#offers = offers;
@@ -105,15 +105,24 @@ export default class FormEditView {
     return createFormCreateTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#closeClickHandler);
+  };
 
-    return this.#element;
-  }
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setOpenClickHandler = (callback) => {
+    this._callback.openClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
+  };
+
+  #openClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openClick();
+  };
+
 }

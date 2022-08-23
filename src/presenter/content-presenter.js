@@ -3,29 +3,24 @@ import FormEditView from '../view/form-edit-view.js';
 import TripListView from '../view/trip-list-view.js';
 import RoutePointView from '../view/route-point-view';
 import NoPointsView from '../view/no-points-view';
-import {render} from '../render.js';
+import {render} from '../framework/render';
 
 export default class ContentPresenter {
   #pointsModel = null;
+  #mainContainer = null;
   #sortFormComponent = new SortView();
   #tripListComponent = new TripListView();
   #boardTasks = [];
 
-
-  init = (mainContainer, pointsModel) => {
+  constructor(mainContainer, pointsModel) {
+    this.#mainContainer = mainContainer;
     this.#pointsModel = pointsModel;
+  }
+
+
+  init = () => {
     this.#boardTasks = [...this.#pointsModel.points];
-
-    if (this.#boardTasks.every((task) => task.isArchive)) {
-      render(new NoPointsView(), mainContainer);
-    } else {
-      render(this.#sortFormComponent, mainContainer);
-      render(this.#tripListComponent, mainContainer);
-
-      for (let i = 0; i < this.#boardTasks.length; i++) {
-        this.#renderTask(this.#boardTasks[i]);
-      }
-    }
+    this.#renderBoard();
   };
 
   #renderTask = (point, offers) => {
@@ -48,22 +43,34 @@ export default class ContentPresenter {
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setOpenClickHandler(() => {
       openFormEdit();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    formEditView.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    formEditView.setFormSubmitHandler(() => {
       openRoutePoint();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    formEditView.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    formEditView.setOpenClickHandler(() => {
       openRoutePoint();
     });
 
     render(pointComponent, this.#tripListComponent.element);
   };
 
+  #renderBoard = () => {
+    render(this.#tripListComponent, this.#mainContainer);
+    if (this.#boardTasks.every((task) => task.isArchive)) {
+      render(new NoPointsView(), this.#mainContainer);
+    } else {
+      render(this.#sortFormComponent, this.#mainContainer);
+      render(this.#tripListComponent, this.#mainContainer);
+
+      for (let i = 0; i < this.#boardTasks.length; i++) {
+        this.#renderTask(this.#boardTasks[i]);
+      }
+    }
+  };
 }

@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {destinations} from '../fish/destination.js';
-import {humanizeTaskDueDate} from '../utils.js';
+import {humanizeTaskDueDate} from '../utils/task';
 import {offer} from '../fish/offers';
 
 const createNewFormTemplate = (task) => {
@@ -99,13 +99,13 @@ ${createPhotosTemplate().join('')}
   );
 };
 
-export default class FormCreateView {
+export default class FormCreateView extends AbstractView{
   #point = null;
   #destination = null;
   #offers = null;
-  #element = null;
 
   constructor(point, destination, offers) {
+    super();
     this.#point = point;
     this.#destination = destination;
     this.#offers = offers;
@@ -115,15 +115,4 @@ export default class FormCreateView {
     return createNewFormTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
