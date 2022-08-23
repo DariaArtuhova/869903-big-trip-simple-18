@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 import {generateType} from './point';
 import {generateOffers} from './point';
 

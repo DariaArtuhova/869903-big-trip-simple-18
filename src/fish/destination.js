@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 
 const generatePicture = () => `http://picsum.photos/248/152?r=${getRandomInteger(1, 15)}`;
 
