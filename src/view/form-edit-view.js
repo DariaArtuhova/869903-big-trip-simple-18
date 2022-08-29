@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {humanizeTaskDueDate} from '../utils/task';
 import {destinations} from '../fish/destination';
 import {offer} from '../fish/offers';
 
@@ -52,10 +53,10 @@ const createFormCreateTemplate = (task) => {
       </div>
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(dateFrom)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(dateTo)}">
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
@@ -108,21 +109,12 @@ export default class FormEditView extends AbstractView{
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('.event--edit').addEventListener('submit', this.#closeClickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
   };
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit();
-  };
-
-  setOpenClickHandler = (callback) => {
-    this._callback.openClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
-  };
-
-  #openClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.openClick();
   };
 
 }

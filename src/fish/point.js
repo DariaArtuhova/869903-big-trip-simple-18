@@ -1,6 +1,7 @@
 import {getRandomInteger} from '../utils/common';
 import {OFFERS, MIN_VALUE_ID_DESTINATION, MAX_VALUE_ID_DESTINATION, MIN_VALUE_PRICE, MAX_VALUE_PRICE} from '../const';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 export const generateOffers = () => {
   const offers = OFFERS;
@@ -61,6 +62,7 @@ const generateHoursFrom = () => {
 
 
 export const generatePoint = () => ({
+  id: nanoid(),
   type: generateType(),
   city:generateCity(),
   dateFrom: generateDateFrom(),

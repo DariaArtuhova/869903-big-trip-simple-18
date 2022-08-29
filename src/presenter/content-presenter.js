@@ -1,7 +1,7 @@
-import FormEditView from '../view/form-edit-view.js';
+import PointPresenter from './point-presenter';
 import TripListView from '../view/trip-list-view.js';
-import RoutePointView from '../view/route-point-view';
 import NoPointsView from '../view/no-points-view';
+import {updateItem} from '../utils/common.js';
 import {render} from '../framework/render';
 
 export default class ContentPresenter {
@@ -9,6 +9,8 @@ export default class ContentPresenter {
   #mainContainer = null;
   #tripListComponent = new TripListView();
   #boardTasks = [];
+
+  #pointPresenter = new Map();
 
   constructor(mainContainer, pointsModel) {
     this.#mainContainer = mainContainer;
@@ -18,56 +20,41 @@ export default class ContentPresenter {
 
   init = () => {
     this.#boardTasks = [...this.#pointsModel.points];
-    this.#renderBoard();
+    this.#renderPoints();
+    this.#renderNoTask();
   };
 
-  #renderTask = (point, offers) => {
-    const pointComponent = new RoutePointView(point, offers);
-    const formEditView = new FormEditView(point, offers);
-
-    const openFormEdit = () => {
-      this.#tripListComponent.element.replaceChild(formEditView.element, pointComponent.element);
-    };
-
-    const openRoutePoint = () => {
-      this.#tripListComponent.element.replaceChild(pointComponent.element, formEditView.element);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        openRoutePoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    pointComponent.setOpenClickHandler(() => {
-      openFormEdit();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    formEditView.setFormSubmitHandler(() => {
-      openRoutePoint();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    formEditView.setOpenClickHandler(() => {
-      openRoutePoint();
-    });
-
-    render(pointComponent, this.#tripListComponent.element);
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #renderBoard = () => {
+  #handlePointChange = (updatedPoint) => {
+    this.#boardTasks = updateItem(this.#boardTasks, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #renderTask = (task) => {
+    const pointPresenter = new PointPresenter (this.#tripListComponent.element, this.#handleModeChange);
+    pointPresenter.init(task);
+    this.#pointPresenter.set(task.id, pointPresenter);
+  };
+
+  #clearTaskList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
+
+  #renderNoTask = () => {
     render(this.#tripListComponent, this.#mainContainer);
     if (this.#boardTasks.every((task) => task.isArchive)) {
       render(new NoPointsView(), this.#mainContainer);
-    } else {
-      render(this.#tripListComponent, this.#mainContainer);
+    }
+  };
 
-      for (let i = 0; i < this.#boardTasks.length; i++) {
-        this.#renderTask(this.#boardTasks[i]);
-      }
+  #renderPoints = () => {
+    render(this.#tripListComponent, this.#mainContainer);
+    for (let i = 0; i < this.#boardTasks.length; i++) {
+      this.#renderTask(this.#boardTasks[i]);
     }
   };
 }
