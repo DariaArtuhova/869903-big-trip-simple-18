@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 export const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {

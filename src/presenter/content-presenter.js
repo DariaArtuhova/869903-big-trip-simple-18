@@ -1,11 +1,11 @@
-import {SORT_TYPES} from "../const";
+import {SORT_TYPES} from '../const';
 import PointPresenter from './point-presenter';
 import TripListView from '../view/trip-list-view.js';
 import NoPointsView from '../view/no-points-view';
-import SortView from "../view/sort-view";
+import SortView from '../view/sort-view';
 import {updateItem} from '../utils/common.js';
 import {render, RenderPosition, remove} from '../framework/render';
-import {sortDate, sortPrice} from "../utils/sort";
+import {sortDate, sortPrice} from '../utils/sort';
 
 export default class ContentPresenter {
   #pointsModel = null;
