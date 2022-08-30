@@ -15,8 +15,5 @@ export const FILTER_TYPES = {
 
 export const SORT_TYPES = {
   day: 'day',
-  event: 'event',
-  time: 'time',
   price: 'price',
-  offer: 'offer',
 };

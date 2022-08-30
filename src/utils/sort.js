@@ -1,9 +1,29 @@
-import {SORT_TYPES} from '../const';
+import dayjs from "dayjs";
 
-export const sort = {
-  [SORT_TYPES.day]: (pointsModel) => pointsModel.sort((a, b) => a.dateFrom - b.dateFrom),
-  [SORT_TYPES.event]: (pointsModel) => pointsModel,
-  [SORT_TYPES.time]: (pointsModel) => pointsModel,
-  [SORT_TYPES.price]: (pointsModel) => pointsModel.sort((a, b) => b.price - a.price),
-  [SORT_TYPES.offer]: (pointsModel) => pointsModel,
+export const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+
+export const sortDate = (taskA, taskB) => {
+  const weight = getWeightForNullDate(taskA.dateFrom, taskB.dateFrom);
+
+  return weight ?? dayjs(taskA.dateFrom).diff(dayjs(taskB.dateFrom));
+};
+
+export const sortPrice = (taskA, taskB) => {
+  const weight = getWeightForNullDate(taskA.price, taskB.price);
+
+  return weight ?? dayjs(taskB.price).diff(dayjs(taskA.price));
 };
