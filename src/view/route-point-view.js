@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {offer} from '../fish/offers';
-import {humanizePointDueDate} from '../utils/task';
+import {humanizePointDueDate, formatDate} from '../utils/task';
 
 const createRoutePointTemplate = (task) => {
-  const {type, city, price, hoursFrom, hoursTo} = task;
+  const {type, city, price, hoursFrom, hoursTo, dateFrom} = task;
   const pointOfferType = offer.filter((el) => (el.type === type));
 
   const selectedOffers = pointOfferType.map((el) => `<li class="event__offer">
@@ -15,7 +15,7 @@ const createRoutePointTemplate = (task) => {
   return (
     `            <li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">MAR 18</time>
+                <time class="event__date" datetime="2019-03-18">${formatDate(dateFrom)}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
