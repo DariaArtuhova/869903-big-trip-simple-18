@@ -1,40 +1,44 @@
 import {getRandomInteger} from '../utils/common';
-import {generateType} from './point';
 import {generateOffers} from './point';
 
 export const offer = [{
   id: 1,
-  type: generateType(),
+  type: 'taxi',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 2,
-  type: generateType(),
+  type: 'bus',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 3,
-  type: generateType(),
+  type: 'train',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 4,
-  type: generateType(),
+  type: 'ship',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 5,
-  type: generateType(),
+  type: 'flight',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 6,
-  type: generateType(),
+  type: 'restaurant',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
   id: 7,
-  type: generateType(),
+  type: 'sightseeing',
+  title: generateOffers(),
+  price: getRandomInteger(100,1000)
+},{
+  id: 7,
+  type: 'check-in',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 }

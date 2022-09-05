@@ -61,7 +61,7 @@ export default class ContentPresenter {
   };
 
   #renderTask = (task) => {
-    const pointPresenter = new PointPresenter (this.#tripListComponent.element, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter (this.#tripListComponent.element, this.#handleModeChange, this.#handlePointChange);
     pointPresenter.init(task);
     this.#pointPresenter.set(task.id, pointPresenter);
   };

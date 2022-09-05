@@ -17,3 +17,12 @@ export const SORT_TYPES = {
   day: 'day',
   price: 'price',
 };
+
+export const BLANC_EVENT = {
+  price: null,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  offers: [],
+  type: null,
+};
