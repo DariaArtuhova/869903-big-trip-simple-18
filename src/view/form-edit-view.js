@@ -3,6 +3,9 @@ import {humanizeTaskDueDate} from '../utils/task';
 import {destinations} from '../fish/destination';
 import {offer} from '../fish/offers';
 import {BLANC_EVENT} from '../const';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 
 const createTypeTemplate = (type, checked) => (`
@@ -120,7 +123,8 @@ ${descriptionComponent}
   `);
 };
 
-export default class FormEditView extends AbstractStatefulView{
+export default class FormEditView extends AbstractStatefulView {
+  #datepicker = null;
 
   constructor(point = BLANC_EVENT) {
     super();
@@ -132,6 +136,7 @@ export default class FormEditView extends AbstractStatefulView{
   get template() {
     return createFormCreateTemplate(this._state);
   }
+
 
   reset = (point) => {
     this.updateElement(
@@ -149,6 +154,19 @@ export default class FormEditView extends AbstractStatefulView{
     return point;
   };
 
+  #setDatepicker = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelectorAll('.event__input--time'),
+      {
+        enableTime: true,
+        minDate: 'today',
+        mode: 'range',
+        dateFormat: 'j/m/y / h:i',
+        onChange: this.#dueDateChangeHandler,
+      },
+    );
+  };
+
 
   #setInnerHandlers = () => {
     Array.from(this.element.querySelectorAll('.event__type-input')).forEach((typeElement) => typeElement
@@ -159,6 +177,7 @@ export default class FormEditView extends AbstractStatefulView{
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.#setDatepicker();
   };
 
   #eventTypeToggleHandler = (evt) => {
@@ -173,6 +192,14 @@ export default class FormEditView extends AbstractStatefulView{
     evt.preventDefault();
     this._setState({
       price: evt.target.value,
+    });
+  };
+
+  #dueDateChangeHandler = ([dateFrom, dateTo]) => {
+    this.updateElement({
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+
     });
   };
 
@@ -206,6 +233,7 @@ export default class FormEditView extends AbstractStatefulView{
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditClickHandler(this._callback.editClick);
+    this.#setDatepicker();
   };
 
   #editClickHandler = (evt) => {
