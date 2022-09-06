@@ -11,15 +11,15 @@ export const generateOffers = () => {
 
 export const generateType = () => {
   const type = [
-    'Taxi',
-    'Bus',
-    'Train',
-    'Ship',
-    'Drive',
-    'Flight',
-    'Check-in',
-    'Sightseeing',
-    'Restaurant',
+    'taxi',
+    'bus',
+    'train',
+    'ship',
+    'drive',
+    'flight',
+    'check-in',
+    'sightseeing',
+    'restaurant',
   ];
 
   const randomIndex = getRandomInteger(0, type.length - 1);
@@ -61,17 +61,18 @@ const generateHoursFrom = () => {
 };
 
 
-export const generatePoint = () => ({
-  id: nanoid(),
-  type: generateType(),
-  city:generateCity(),
-  dateFrom: generateDateFrom(),
-  dateTo: generateDateFrom(),
-  price: getRandomInteger(MIN_VALUE_PRICE, MAX_VALUE_PRICE),
-  offers: getRandomInteger(1, 3),
-  destination: getRandomInteger(MIN_VALUE_ID_DESTINATION, MAX_VALUE_ID_DESTINATION),
-  hoursFrom: generateHoursFrom(),
-  hoursTo: generateHoursFrom(),
+export const generatePoint = () =>
+  ({
+    id: nanoid(),
+    type: generateType(),
+    city: generateCity(),
+    dateFrom: generateDateFrom(),
+    dateTo: generateDateFrom(),
+    price: getRandomInteger(MIN_VALUE_PRICE, MAX_VALUE_PRICE),
+    offers: generateOffers(),
+    destination: getRandomInteger(MIN_VALUE_ID_DESTINATION, MAX_VALUE_ID_DESTINATION),
+    hoursFrom: generateHoursFrom(),
+    hoursTo: generateHoursFrom(),
 
-});
+  });
 

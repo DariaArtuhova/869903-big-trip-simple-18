@@ -33,6 +33,8 @@ export default class PointPresenter {
 
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);
     this.#formEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#formEditComponent.setEditClickHandler(this.#handleFormClose);
+
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
       render(this.#pointComponent, this.#pointListContainer);
@@ -58,19 +60,21 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== MODE.DEFAULT) {
+      this.#formEditComponent.reset(this.#task);
       this.#replaceFormToRoute();
     }
   };
 
   #replaceRouteToForm = () => {
     replace(this.#formEditComponent, this.#pointComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#changeMode();
     this.#mode = MODE.EDITING;
   };
 
   #replaceFormToRoute = () => {
     replace(this.#pointComponent, this.#formEditComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = MODE.DEFAULT;
 
   };
@@ -78,6 +82,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#formEditComponent.reset(this.#task);
       this.#replaceFormToRoute();
     }
   };
@@ -87,6 +92,11 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = () => {
+    this.#replaceFormToRoute();
+  };
+
+  #handleFormClose = () => {
+    this.#formEditComponent.reset(this.#task);
     this.#replaceFormToRoute();
   };
 }
