@@ -1,6 +1,7 @@
 import FormEditView from '../view/form-edit-view.js';
 import RoutePointView from '../view/route-point-view';
 import {replace, render, remove} from '../framework/render';
+import {UserAction, UpdateType} from '../const';
 
 const MODE = {
   DEFAULT: 'DEFAULT',
@@ -12,13 +13,16 @@ export default class PointPresenter {
   #formEditComponent = null;
   #pointComponent = null;
   #changeMode = null;
+  #changeData = null;
 
   #task = null;
   #mode = MODE.DEFAULT;
 
-  constructor(pointListContainer, changeMode) {
+  constructor(pointListContainer, changeMode, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeMode = changeMode;
+    this.#changeData = changeData;
+
   }
 
   init = (task) => {
@@ -34,6 +38,7 @@ export default class PointPresenter {
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);
     this.#formEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#formEditComponent.setEditClickHandler(this.#handleFormClose);
+    this.#formEditComponent.setDeleteClickHandler(this.#handleFormDelete);
 
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
@@ -91,8 +96,21 @@ export default class PointPresenter {
     this.#replaceRouteToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      point,
+    );
     this.#replaceFormToRoute();
+  };
+
+  #handleFormDelete = (trip) => {
+    this.#changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      trip,
+    );
   };
 
   #handleFormClose = () => {
