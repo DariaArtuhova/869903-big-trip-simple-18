@@ -78,9 +78,11 @@ export default class ContentPresenter {
         break;
       case UserAction.ADD_TASK:
         this.#pointsModel.addPoint(updateType, update);
+        this.#renderSort();
         break;
       case UserAction.DELETE_TASK:
         this.#pointsModel.deletePoint(updateType, update);
+        this.#renderSort();
         break;
     }
   };

@@ -5,14 +5,18 @@ import FilterModel from './model/filter-model';
 import FilterPresenter from './presenter/filter-presenter.js';
 import NewEventButtonView from './view/new-event-button-view';
 
-const siteFilterElement = document.querySelector('.trip-main');
+const siteFilterElement = document.querySelector('.trip-main__trip-controls');
 const siteContentWrapperElement = document.querySelector('.trip-events');
+const siteButtonElement = document.querySelector('.trip-main');
 
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
 const contentPresenter = new ContentPresenter(siteContentWrapperElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, pointsModel);
 const newTaskButtonComponent = new NewEventButtonView();
+
+filterPresenter.init();
+contentPresenter.init();
 
 const handleNewTaskFormClose = () => {
   newTaskButtonComponent.element.disabled = false;
@@ -23,9 +27,6 @@ const handleNewTaskButtonClick = () => {
   newTaskButtonComponent.element.disabled = true;
 };
 
-render(newTaskButtonComponent, siteFilterElement);
+render(newTaskButtonComponent, siteButtonElement);
 newTaskButtonComponent.setClickHandler(handleNewTaskButtonClick);
 
-
-filterPresenter.init();
-contentPresenter.init();

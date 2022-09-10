@@ -37,7 +37,7 @@ export const OFFERS = [{
   title: generateOffers(),
   price: getRandomInteger(100,1000)
 },{
-  id: 7,
+  id: 8,
   type: 'check-in',
   title: generateOffers(),
   price: getRandomInteger(100,1000)
