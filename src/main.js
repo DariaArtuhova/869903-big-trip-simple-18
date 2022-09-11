@@ -1,9 +1,9 @@
 import ContentPresenter from './presenter/content-presenter.js';
-import {remove, render} from './framework/render';
+import {render} from './framework/render';
 import FilterModel from './model/filter-model';
 import FilterPresenter from './presenter/filter-presenter.js';
 import NewEventButtonView from './view/new-event-button-view';
-import PointsApiService from "./points-api-service";
+import PointsApiService from './points-api-service';
 import PointsModel from './model/model';
 
 

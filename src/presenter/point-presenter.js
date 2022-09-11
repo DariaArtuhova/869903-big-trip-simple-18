@@ -32,8 +32,8 @@ export default class PointPresenter {
     this.#task = task;
     this.#pointsModel = pointsModel;
 
-    const destinations = [...this.#pointsModel.destinations];
-    const offers = [...this.#pointsModel.offers];
+    this.#destinations = [...this.#pointsModel.destinations];
+    this.#offers = [...this.#pointsModel.offers];
 
     const prevTaskComponent = this.#pointComponent;
     const prevTaskEditComponent = this.#formEditComponent;

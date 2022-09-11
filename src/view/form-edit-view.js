@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
- const BLANK_EVENT = {
+const BLANK_EVENT = {
   price: null,
   dateFrom: null,
   dateTo: null,
@@ -143,7 +143,7 @@ const createFormCreateTemplate = (event, destinations, offers) => {
 
   const eventTypeTemplate = createEventTypeTemplate(types, type);
   const destinationTemplate = createEventDestinationTemplate(type, eventDestination, destinations);
-  const offersSection = createOffersSection(eventOffers, offerByType?.offers);
+  const offersSection = createOffersSection(offers, offerByType?.offers);
   const destinationSection = createDestinationSection(eventDestination, destinations);
 
   const isSubmitDisabled = isDisabled | !dateFrom | !dateTo | !type | !eventDestination;

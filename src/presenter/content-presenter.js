@@ -7,7 +7,7 @@ import {render, RenderPosition, remove} from '../framework/render';
 import {sortDate, sortPrice} from '../utils/sort';
 import {filter} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
-import LoadingView from "../view/loading-view";
+import LoadingView from '../view/loading-view';
 
 
 export default class ContentPresenter {
