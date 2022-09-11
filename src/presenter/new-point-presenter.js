@@ -7,26 +7,29 @@ export default class NewPointPresenter {
   #pointListContainer = null;
   #formEditComponent = null;
   #changeData = null;
-  #pointModel = null;
+  #pointsModel = null;
   #destroyCallback = null;
 
   #task = null;
 
-  constructor(pointListContainer, changeData, pointModel) {
+  constructor(pointListContainer, changeData, pointsModel) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
-    this.#pointModel = pointModel;
+    this.#pointsModel = pointsModel;
   }
 
   init = (callback) => {
     this.#destroyCallback = callback;
+
+    const destinations = [...this.#pointsModel.destinations];
+    const offers = [...this.#pointsModel.offers];
 
     if (this.#formEditComponent !== null) {
       return;
     }
 
 
-    this.#formEditComponent = new FormEditView();
+    this.#formEditComponent = new FormEditView(offers, destinations);
 
     this.#formEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#formEditComponent.setDeleteClickHandler(this.#handleFormClose);

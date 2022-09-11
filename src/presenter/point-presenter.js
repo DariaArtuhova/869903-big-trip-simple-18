@@ -14,25 +14,32 @@ export default class PointPresenter {
   #pointComponent = null;
   #changeMode = null;
   #changeData = null;
+  #pointsModel = null;
 
   #task = null;
   #mode = MODE.DEFAULT;
 
-  constructor(pointListContainer, changeMode, changeData) {
+  #destinations = null;
+  #offers = null;
+
+  constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
     this.#changeMode = changeMode;
     this.#changeData = changeData;
-
   }
 
-  init = (task) => {
+  init = (task, pointsModel) => {
     this.#task = task;
+    this.#pointsModel = pointsModel;
+
+    const destinations = [...this.#pointsModel.destinations];
+    const offers = [...this.#pointsModel.offers];
 
     const prevTaskComponent = this.#pointComponent;
     const prevTaskEditComponent = this.#formEditComponent;
 
-    this.#formEditComponent = new FormEditView(task);
     this.#pointComponent = new RoutePointView(task);
+    this.#formEditComponent = new FormEditView(this.#task, this.#destinations, this.#offers);
 
 
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);

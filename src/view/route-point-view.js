@@ -1,5 +1,4 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {OFFERS} from '../fish/offers';
 import {humanizePointDueDate, formatDate} from '../utils/task';
 
 const createRoutePointTemplate = (task) => {
