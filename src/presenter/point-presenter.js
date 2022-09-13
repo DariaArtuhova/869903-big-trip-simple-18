@@ -1,6 +1,7 @@
 import FormEditView from '../view/form-edit-view.js';
 import RoutePointView from '../view/route-point-view';
 import {replace, render, remove} from '../framework/render';
+import {UserAction, UpdateType} from '../const';
 
 const MODE = {
   DEFAULT: 'DEFAULT',
@@ -12,28 +13,32 @@ export default class PointPresenter {
   #formEditComponent = null;
   #pointComponent = null;
   #changeMode = null;
+  #changeData = null;
 
-  #task = null;
+  #point = null;
   #mode = MODE.DEFAULT;
 
-  constructor(pointListContainer, changeMode) {
+  constructor(pointListContainer, changeMode, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeMode = changeMode;
+    this.#changeData = changeData;
+
   }
 
-  init = (task) => {
-    this.#task = task;
+  init = (point) => {
+    this.#point = point;
 
     const prevTaskComponent = this.#pointComponent;
     const prevTaskEditComponent = this.#formEditComponent;
 
-    this.#formEditComponent = new FormEditView(task);
-    this.#pointComponent = new RoutePointView(task);
+    this.#formEditComponent = new FormEditView(point);
+    this.#pointComponent = new RoutePointView(point);
 
 
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);
     this.#formEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#formEditComponent.setEditClickHandler(this.#handleFormClose);
+    this.#formEditComponent.setDeleteClickHandler(this.#handleFormDelete);
 
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
@@ -60,7 +65,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== MODE.DEFAULT) {
-      this.#formEditComponent.reset(this.#task);
+      this.#formEditComponent.reset(this.#point);
       this.#replaceFormToRoute();
     }
   };
@@ -82,7 +87,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#formEditComponent.reset(this.#task);
+      this.#formEditComponent.reset(this.#point);
       this.#replaceFormToRoute();
     }
   };
@@ -91,12 +96,25 @@ export default class PointPresenter {
     this.#replaceRouteToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      point,
+    );
     this.#replaceFormToRoute();
   };
 
+  #handleFormDelete = (trip) => {
+    this.#changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      trip,
+    );
+  };
+
   #handleFormClose = () => {
-    this.#formEditComponent.reset(this.#task);
+    this.#formEditComponent.reset(this.#point);
     this.#replaceFormToRoute();
   };
 }

@@ -10,7 +10,8 @@ export const MAX_VALUE_ID_DESTINATION = 4;
 
 export const FILTER_TYPES = {
   everything: 'everything',
-  future: 'future'
+  future: 'future',
+  past: 'past'
 };
 
 export const SORT_TYPES = {
@@ -26,3 +27,17 @@ export const BLANC_EVENT = {
   offers: [],
   type: null,
 };
+
+export const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export const NO_TASKS = 0;

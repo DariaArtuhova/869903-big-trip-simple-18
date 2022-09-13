@@ -1,7 +1,7 @@
 import {getRandomInteger} from '../utils/common';
 import {generateOffers} from './point';
 
-export const offer = [{
+export const OFFERS = [{
   id: 1,
   type: 'taxi',
   title: generateOffers(),
