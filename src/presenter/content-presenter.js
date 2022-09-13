@@ -7,22 +7,21 @@ import {render, RenderPosition, remove} from '../framework/render';
 import {sortDate, sortPrice} from '../utils/sort';
 import {filter} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
-import LoadingView from '../view/loading-view';
 
 
 export default class ContentPresenter {
   #pointsModel = null;
   #mainContainer = null;
   #filterModel = null;
-  #currentSortType = SORT_TYPES.day;
-  #filterType = FILTER_TYPES.everything;
-
-  #loadingComponent = new LoadingView();
   #tripListComponent = new TripListView();
-  #sortComponent = new SortView(this.#currentSortType);
+
   #pointPresenter = new Map();
 
-  #isLoading = true;
+  #currentSortType = SORT_TYPES.day;
+
+  #filterType = FILTER_TYPES.everything;
+
+  #sortComponent = new SortView(this.#currentSortType);
 
   #noPointsBoard = null;
 
@@ -32,7 +31,7 @@ export default class ContentPresenter {
     this.#mainContainer = mainContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-    this.#newPointPresenter = new NewPointPresenter(this.#tripListComponent, this.#handleViewAction, this.#pointsModel);
+    this.#newPointPresenter = new NewPointPresenter(this.#tripListComponent.element, this.#handleViewAction, this.#pointsModel);
 
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -91,7 +90,7 @@ export default class ContentPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenter.get(data.id).init(data, this.#pointsModel);
+        this.#pointPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
@@ -99,19 +98,15 @@ export default class ContentPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
-        this.#renderPoints();
-        break;
-      case UpdateType.INIT:
-        this.#isLoading = false;
-        remove(this.#loadingComponent);
+        this.#renderSort();
         this.#renderPoints();
         break;
     }
   };
 
   #renderTask = (task) => {
-    const pointPresenter = new PointPresenter (this.#tripListComponent, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(task, this.#pointsModel);
+    const pointPresenter = new PointPresenter (this.#tripListComponent.element, this.#handleModeChange, this.#handleViewAction);
+    pointPresenter.init(task);
     this.#pointPresenter.set(task.id, pointPresenter);
   };
 
@@ -129,13 +124,10 @@ export default class ContentPresenter {
 
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
-    render(this.#sortComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#sortComponent, this.#mainContainer, RenderPosition.BEFOREBEGIN);
   };
 
-  #renderLoading = () => {
-    render(this.#loadingComponent, this.#tripListComponent.element, RenderPosition.AFTERBEGIN);
-  };
 
   #renderNoTask = () => {
     this.#noPointsBoard = new NoPointsView(this.#filterType);
@@ -148,7 +140,6 @@ export default class ContentPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
-    remove(this.#loadingComponent);
     remove(this.#noPointsBoard);
 
     if (this.#noPointsBoard) {
@@ -165,12 +156,6 @@ export default class ContentPresenter {
     const pointCount = points.length;
 
     render(this.#tripListComponent, this.#mainContainer);
-
-    if (this.#isLoading) {
-      this.#renderLoading();
-      return;
-    }
-
     if (pointCount === NO_TASKS) {
       this.#renderNoTask();
       return;
@@ -178,5 +163,6 @@ export default class ContentPresenter {
     for (let i = 0; i < pointCount; i++) {
       this.#renderTask(this.points[i]);
     }
+
   };
 }

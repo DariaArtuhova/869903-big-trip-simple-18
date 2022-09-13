@@ -14,32 +14,25 @@ export default class PointPresenter {
   #pointComponent = null;
   #changeMode = null;
   #changeData = null;
-  #pointsModel = null;
 
-  #task = null;
+  #point = null;
   #mode = MODE.DEFAULT;
 
-  #destinations = null;
-  #offers = null;
-
-  constructor(pointListContainer, changeData, changeMode) {
+  constructor(pointListContainer, changeMode, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeMode = changeMode;
     this.#changeData = changeData;
+
   }
 
-  init = (task, pointsModel) => {
-    this.#task = task;
-    this.#pointsModel = pointsModel;
-
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
+  init = (point) => {
+    this.#point = point;
 
     const prevTaskComponent = this.#pointComponent;
     const prevTaskEditComponent = this.#formEditComponent;
 
-    this.#pointComponent = new RoutePointView(task);
-    this.#formEditComponent = new FormEditView(this.#task, this.#destinations, this.#offers);
+    this.#formEditComponent = new FormEditView(point);
+    this.#pointComponent = new RoutePointView(point);
 
 
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);
@@ -72,7 +65,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== MODE.DEFAULT) {
-      this.#formEditComponent.reset(this.#task);
+      this.#formEditComponent.reset(this.#point);
       this.#replaceFormToRoute();
     }
   };
@@ -94,7 +87,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#formEditComponent.reset(this.#task);
+      this.#formEditComponent.reset(this.#point);
       this.#replaceFormToRoute();
     }
   };
@@ -121,7 +114,7 @@ export default class PointPresenter {
   };
 
   #handleFormClose = () => {
-    this.#formEditComponent.reset(this.#task);
+    this.#formEditComponent.reset(this.#point);
     this.#replaceFormToRoute();
   };
 }
