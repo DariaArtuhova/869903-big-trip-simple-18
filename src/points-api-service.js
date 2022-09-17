@@ -3,6 +3,8 @@ import ApiService from './framework/api-service.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class PointsApiService extends ApiService {
@@ -11,9 +13,19 @@ export default class PointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
+  get offers() {
+    return this._load({url: 'offers'})
+      .then(ApiService.parseResponse);
+  }
+
+  get destinations() {
+    return this._load({url: 'destinations'})
+      .then(ApiService.parseResponse);
+  }
+
   updatePoint = async (points) => {
     const response = await this._load({
-      url: `points/${points.id}`,
+      url: `/points/${points.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(points)),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -24,20 +36,41 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   };
 
+  addPoint = async (point) => {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  deletePoint = async (point) => {
+    const response = await this._load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
+  };
+
   #adaptToServer = (point) => {
-    const adaptedTask = {...point,
+    const adaptedPoint = {...point,
       'base_price': point.price,
-      'destination': point.destinations,
       'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
       'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
+      'offers': point.offers.map(({ id }) => id),
     };
 
-    // Ненужные ключи мы удаляем
-    delete adaptedTask.dateFrom;
-    delete adaptedTask.dateTo;
-    delete adaptedTask.price;
-    delete adaptedTask.destinations;
+    delete adaptedPoint.dateFrom;
+    delete adaptedPoint.dateTo;
+    delete adaptedPoint.price;
+    delete adaptedPoint.offers;
 
-    return adaptedTask;
+    return adaptedPoint;
   };
 }

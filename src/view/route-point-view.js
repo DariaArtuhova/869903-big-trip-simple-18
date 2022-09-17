@@ -1,25 +1,31 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {OFFERS} from '../fish/offers';
 import {humanizePointDueDate, formatDate} from '../utils/task';
-import {destinations} from '../fish/destination';
 
-const createRoutePointTemplate = (points) => {
-  const {
-    hoursFrom,
-    hoursTo,
-    dateFrom,
-    type,
-    price,
-    destination,
-    destinationNameTemplate = destinations.find((el) => (el.id === destination)).name,
-  } = points;
-  const pointOfferType = OFFERS.filter((el) => (el.type === type));
 
-  const selectedOffers = pointOfferType.map((el) => `<li class="event__offer">
-      <span class="event__offer-title">${el.title}</span>
+const createChosenOffersTemplate = (offers) => {
+
+  const template = offers.reduce((prev, cur) => prev.concat(
+    `<li class="event__offer">
+      <span class="event__offer-title">${ cur.title }</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${el.price}</span>
-    </li>`).join('');
+      <span class="event__offer-price">${ cur.price }</span>
+    </li>`
+  ), '');
+
+  return `
+  <h4 class="visually-hidden">Offers:</h4>
+  <ul class="event__selected-offers">
+    ${ template }
+  </ul>`;
+
+};
+
+
+const createRoutePointTemplate = (pointModel, point) => {
+  const {price, dateFrom, dateTo, type, hoursFrom, hoursTo} = point;
+  const offersArray = pointModel.getOffersById(point);
+  const destination = pointModel.getDestinationById(point.destination);
+
 
   return (
     `            <li class="trip-events__item">
@@ -28,20 +34,19 @@ const createRoutePointTemplate = (points) => {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${ type } ${ destinationNameTemplate }</h3>
+                <h3 class="event__title">${ type} ${destination ? destination.name : ''}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="${hoursFrom}">${humanizePointDueDate(hoursFrom)}</time>
+                    <time class="event__start-time" datetime="${hoursFrom}">${humanizePointDueDate(dateFrom)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="${hoursTo}">${humanizePointDueDate(hoursTo)}</time>
+                    <time class="event__end-time" datetime="${hoursTo}">${humanizePointDueDate(dateTo)}</time>
                   </p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${price ? price : ''}</span>
                 </p>
-                <h4 class="visually-hidden">Offers:</h4>
-                <ul class="event__selected-offers">
-${selectedOffers}
+
+${ createChosenOffersTemplate(offersArray) }
                 <button class="event__rollup-btn" type="button">
                   <span class="visually-hidden">Open event</span>
                 </button>
@@ -54,18 +59,19 @@ ${selectedOffers}
 
 export default class RoutePointView extends AbstractView{
   #point = null;
-  #destination = null;
-  #offers = null;
+  #pointModel;
 
-  constructor(point, offers, description) {
+
+  constructor(pointModel,point) {
     super();
+    this.#pointModel = pointModel;
+
     this.#point = point;
-    this.#destination = description;
-    this.#offers = offers;
+
   }
 
   get template() {
-    return createRoutePointTemplate(this.#point, this.#destination, this.#offers);
+    return createRoutePointTemplate(this.#pointModel, this.#point);
   }
 
   setOpenClickHandler = (callback) => {

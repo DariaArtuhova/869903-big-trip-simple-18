@@ -14,11 +14,12 @@ export default class PointPresenter {
   #pointComponent = null;
   #changeMode = null;
   #changeData = null;
-
+  #pointModel;
   #point = null;
   #mode = MODE.DEFAULT;
 
-  constructor(pointListContainer, changeMode, changeData) {
+  constructor(pointModel, pointListContainer, changeMode, changeData) {
+    this.#pointModel = pointModel;
     this.#pointListContainer = pointListContainer;
     this.#changeMode = changeMode;
     this.#changeData = changeData;
@@ -31,8 +32,8 @@ export default class PointPresenter {
     const prevTaskComponent = this.#pointComponent;
     const prevTaskEditComponent = this.#formEditComponent;
 
-    this.#formEditComponent = new FormEditView(point);
-    this.#pointComponent = new RoutePointView(point);
+    this.#formEditComponent = new FormEditView(this.#pointModel, this.#point);
+    this.#pointComponent = new RoutePointView(this.#pointModel, this.#point);
 
 
     this.#pointComponent.setOpenClickHandler(this.#handleEditClick);
@@ -105,11 +106,11 @@ export default class PointPresenter {
     this.#replaceFormToRoute();
   };
 
-  #handleFormDelete = (trip) => {
+  #handleFormDelete = (point) => {
     this.#changeData(
       UserAction.DELETE_TASK,
       UpdateType.MINOR,
-      trip,
+      point,
     );
   };
 
