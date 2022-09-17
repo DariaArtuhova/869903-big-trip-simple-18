@@ -7,13 +7,15 @@ import {render, RenderPosition, remove} from '../framework/render';
 import {sortDate, sortPrice} from '../utils/sort';
 import {filter} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
+import LoadingView from '../view/loading-view';
 
 
 export default class ContentPresenter {
-  #pointsModel = null;
-  #mainContainer = null;
-  #filterModel = null;
+  #pointsModel;
+  #mainContainer;
+  #filterModel;
   #tripListComponent = new TripListView();
+  #loadingComponent = new LoadingView();
 
   #pointPresenter = new Map();
 
@@ -25,7 +27,9 @@ export default class ContentPresenter {
 
   #noPointsBoard = null;
 
-  #newPointPresenter = null;
+  #newPointPresenter;
+
+  #isLoading = true;
 
   constructor(mainContainer, pointsModel, filterModel) {
     this.#mainContainer = mainContainer;
@@ -62,7 +66,6 @@ export default class ContentPresenter {
 
   init = () => {
     this.#renderPoints();
-    this.#renderSort();
   };
 
   #handleModeChange = () => {
@@ -74,15 +77,12 @@ export default class ContentPresenter {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         this.#pointsModel.updatePoint(updateType, update);
-        this.#renderSort();
         break;
       case UserAction.ADD_TASK:
         this.#pointsModel.addPoint(updateType, update);
-        this.#renderSort();
         break;
       case UserAction.DELETE_TASK:
         this.#pointsModel.deletePoint(updateType, update);
-        this.#renderSort();
         break;
     }
   };
@@ -98,16 +98,24 @@ export default class ContentPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
-        this.#renderSort();
+        this.#renderPoints();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderPoints();
         break;
     }
   };
 
-  #renderTask = (task) => {
-    const pointPresenter = new PointPresenter (this.#tripListComponent.element, this.#handleModeChange, this.#handleViewAction);
-    pointPresenter.init(task);
-    this.#pointPresenter.set(task.id, pointPresenter);
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter (this.#pointsModel, this.#tripListComponent.element, this.#handleModeChange, this.#handleViewAction);
+    pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripListComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #handleSortTypeChange = (sortType) => {
@@ -117,7 +125,6 @@ export default class ContentPresenter {
 
     this.#currentSortType = sortType;
     this.#clearBoard();
-    this.#renderSort();
     this.#renderPoints();
   };
 
@@ -151,18 +158,26 @@ export default class ContentPresenter {
     }
   };
 
+
   #renderPoints = () => {
+    render(this.#tripListComponent, this.#mainContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointCount = points.length;
 
-    render(this.#tripListComponent, this.#mainContainer);
     if (pointCount === NO_TASKS) {
       this.#renderNoTask();
       return;
     }
     for (let i = 0; i < pointCount; i++) {
-      this.#renderTask(this.points[i]);
+      this.#renderPoint(this.points[i]);
     }
 
+    this.#renderSort();
   };
 }
