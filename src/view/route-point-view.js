@@ -58,8 +58,8 @@ ${ createChosenOffersTemplate(offersArray) }
 };
 
 export default class RoutePointView extends AbstractView{
-  #point = null;
   #pointModel;
+  #point = null;
 
 
   constructor(pointModel,point) {

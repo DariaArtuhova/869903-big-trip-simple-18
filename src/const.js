@@ -10,13 +10,6 @@ export const EVENT_TYPE = [
   'restaurant',
 ];
 
-export const DESTINATION_NAME = [
-  'Amsterdam',
-  'Geneva',
-  'Chamonix',
-  'Rome',
-];
-
 export const FILTER_TYPES = {
   everything: 'everything',
   future: 'future',

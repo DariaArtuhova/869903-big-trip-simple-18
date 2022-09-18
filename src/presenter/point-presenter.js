@@ -53,6 +53,7 @@ export default class PointPresenter {
 
     if (this.#mode === MODE.EDITING) {
       replace(this.#formEditComponent, prevTaskEditComponent);
+      this.#mode = MODE.DEFAULT;
     }
 
     remove(prevTaskComponent);
@@ -62,6 +63,41 @@ export default class PointPresenter {
   destroy = () => {
     remove(this.#pointComponent);
     remove(this.#formEditComponent);
+  };
+
+  setSaving = () => {
+    if (this.#mode === MODE.EDITING) {
+      this.#formEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === MODE.EDITING) {
+      this.#formEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === MODE.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#formEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#formEditComponent.shake(resetFormState);
   };
 
   resetView = () => {
