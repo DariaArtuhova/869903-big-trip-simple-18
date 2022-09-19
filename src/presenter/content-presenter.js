@@ -1,4 +1,5 @@
 import {SORT_TYPES, NO_TASKS, UpdateType, UserAction, FILTER_TYPES} from '../const';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import PointPresenter from './point-presenter';
 import TripListView from '../view/trip-list-view.js';
 import NoPointsView from '../view/no-points-view';
@@ -9,6 +10,10 @@ import {filter} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class ContentPresenter {
   #pointsModel;
@@ -30,6 +35,8 @@ export default class ContentPresenter {
   #newPointPresenter;
 
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(mainContainer, pointsModel, filterModel) {
     this.#mainContainer = mainContainer;
@@ -73,18 +80,43 @@ export default class ContentPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter (this.#pointsModel, this.#tripListComponent.element, this.#handleModeChange, this.#handleViewAction);
+    pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
+  };
+
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_TASK:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_TASK:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -106,12 +138,6 @@ export default class ContentPresenter {
         this.#renderPoints();
         break;
     }
-  };
-
-  #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter (this.#pointsModel, this.#tripListComponent.element, this.#handleModeChange, this.#handleViewAction);
-    pointPresenter.init(point);
-    this.#pointPresenter.set(point.id, pointPresenter);
   };
 
   #renderLoading = () => {

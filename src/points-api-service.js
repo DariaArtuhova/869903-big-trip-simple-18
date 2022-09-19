@@ -23,11 +23,11 @@ export default class PointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  updatePoint = async (points) => {
+  updatePoint = async (point) => {
     const response = await this._load({
-      url: `/points/${points.id}`,
+      url: `points/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(points)),
+      body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -49,9 +49,9 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   };
 
-  deletePoint = async (point) => {
+  deletePoint = async (points) => {
     const response = await this._load({
-      url: `points/${point.id}`,
+      url: `points/${points.id}`,
       method: Method.DELETE,
     });
 
@@ -60,16 +60,18 @@ export default class PointsApiService extends ApiService {
 
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
-      'base_price': point.price,
-      'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
-      'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
-      'offers': point.offers.map(({ id }) => id),
+      'base_price': Number(point.price),
+      'date_from': new Date(point.dateFrom).toISOString(),
+      'date_to': new Date(point.dateTo).toISOString(),
+      'is_favorite': point.isFavorite,
+      'id': point.id,
     };
 
+    delete adaptedPoint.price;
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
-    delete adaptedPoint.price;
-    delete adaptedPoint.offers;
+    delete adaptedPoint.isFavorite;
+    delete adaptedPoint.id;
 
     return adaptedPoint;
   };

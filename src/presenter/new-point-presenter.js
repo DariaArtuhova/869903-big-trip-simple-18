@@ -1,6 +1,5 @@
 import {render, remove, RenderPosition} from '../framework/render';
 import {UserAction, UpdateType} from '../const';
-import {nanoid} from 'nanoid';
 import FormEditView from '../view/form-edit-view';
 
 export default class NewPointPresenter {
@@ -57,13 +56,31 @@ export default class NewPointPresenter {
     }
   };
 
+  setSaving = () => {
+    this.#formEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#formEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#formEditComponent.shake(resetFormState);
+  };
+
   #handleFormSubmit = (point) => {
     this.#changeData(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      point,
     );
-    this.destroy();
   };
 
   #handleFormClose = () => {

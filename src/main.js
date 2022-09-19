@@ -10,7 +10,7 @@ const siteFilterElement = document.querySelector('.trip-main__trip-controls');
 const siteContentWrapperElement = document.querySelector('.trip-events');
 const siteButtonElement = document.querySelector('.trip-main');
 
-const AUTHORIZATION = 'Basic fcbb55jkel34';
+const AUTHORIZATION = 'Basic fcbb55jl34';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
 const pointsModel = new PointsModel(new PointsApiService(END_POINT, AUTHORIZATION));
@@ -28,9 +28,10 @@ const handleNewTaskButtonClick = () => {
   newTaskButtonComponent.element.disabled = true;
 };
 
-render(newTaskButtonComponent, siteButtonElement);
-newTaskButtonComponent.setClickHandler(handleNewTaskButtonClick);
-
 filterPresenter.init();
 contentPresenter.init();
-pointsModel.init();
+pointsModel.init()
+  .finally(() => {
+    render(newTaskButtonComponent, siteButtonElement);
+    newTaskButtonComponent.setClickHandler(handleNewTaskButtonClick);
+  });

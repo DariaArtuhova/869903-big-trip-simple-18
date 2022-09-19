@@ -6,11 +6,11 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 export const BLANK_EVENT = {
   price: 0,
-  dateFrom: new Date,
-  dateTo: new Date,
-  destinations: null,
-  id: null,
-  offers: [1, 2, 3, 4, 5, 6, 7],
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  destination: 1,
+  isFavorite: false,
+  offers: [1, 2, 3],
   type: 'taxi'
 };
 
@@ -56,11 +56,16 @@ const createTypeEditTemplate = (currentType) => EVENT_TYPE.map((type) =>
 const createFormCreateTemplate = (pointModel, point) => {
   const {
     id,
-    price,
     dateFrom,
     dateTo,
+    price,
     type,
+    isDisabled,
+    isSaving,
+    isDeleting,
   } = point;
+
+  const isSubmitDisabled = isDisabled | !dateFrom | !dateTo | !type;
 
   const offersArray = pointModel.getOffersById(point);
   const destination = pointModel.getDestinationById(point.destination);
@@ -74,8 +79,12 @@ const createFormCreateTemplate = (pointModel, point) => {
       </button>`
     : '';
 
+  const buttonResetTemplate = id
+    ? `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>`
+    : '<button class="event__reset-btn" type="reset">Cancel</button>';
+
   return `<li class="trip-events__item">
-              <form class="event event--edit" action="#" method="post">
+              <form class="event event--edit" action="#" method="post" ${isDisabled ? 'disabled' : ''}>
                 <header class="event__header">
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -111,10 +120,12 @@ ${ createDatalistTemplate(destinations, destination) }
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="number" pattern="[0-9]+" name="event-price" value="${ price }">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price ? price : ''}">
                   </div>
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Cancel'}</button>
+<button class="event__save-btn btn btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>
+            ${isSaving ? 'Saving...' : 'Save'}
+          </button>
+          ${buttonResetTemplate}
                   ${buttonCloseTemplate}
                 </header>
                 <section class="event__details">
@@ -131,9 +142,9 @@ ${ offersArray[0] ? createOffersTemplate(offersArray) : '' }
 };
 
 export default class FormEditView extends AbstractStatefulView {
+  #pointModel;
   #startDatepicker = null;
   #endDatepicker = null;
-  #pointModel;
 
   constructor(pointModel, point = BLANK_EVENT) {
     super();
@@ -161,43 +172,40 @@ export default class FormEditView extends AbstractStatefulView {
     }
   };
 
-  #startDateChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateFrom: userDate,
-    });
-  };
-
-  #endDateChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateTo: userDate,
-    });
-  };
-
-  #setStartDatepicker = () => {
+  #setDatepicker = () => {
     this.#startDatepicker = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
+      this.element.querySelector('[name = "event-start-time"]'),
       {
-        enableTime: true,
-        'time_24hr': true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onClose: this.#startDateChangeHandler,
-      }
+        onChange: this.#dueDateFromChangeHandler,
+        enableTime: true,
+        'time_24hr': true,
+      },
+    );
+
+    this.#endDatepicker = flatpickr(
+      this.element.querySelector('[name = "event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#dueDateToChangeHandler,
+        enableTime: true,
+        'time_24hr': true,
+      },
     );
   };
 
-  #setEndDatepicker = () => {
-    this.#endDatepicker = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
-      {
-        enableTime: true,
-        'time_24hr': true,
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.dateTo,
-        minDate: this._state.dateFrom,
-        onClose: this.#endDateChangeHandler,
-      }
-    );
+  #dueDateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate?.toISOString(),
+    });
+  };
+
+  #dueDateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate?.toISOString(),
+    });
   };
 
   reset = (point) => {
@@ -208,11 +216,17 @@ export default class FormEditView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     ...point,
-
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseStateToPoint = (state) => {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   };
@@ -249,6 +263,8 @@ export default class FormEditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#eventDestinationInputHandler);
+
+    this.#setDatepicker();
   };
 
 
@@ -287,8 +303,7 @@ export default class FormEditView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditClickHandler(this._callback.editClick);
-    this.#setStartDatepicker();
-    this.#setEndDatepicker();
+    this.#setDatepicker();
     this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
