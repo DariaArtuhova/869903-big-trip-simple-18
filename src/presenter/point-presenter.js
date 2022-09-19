@@ -139,7 +139,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       point,
     );
-    this.#replaceFormToRoute();
   };
 
   #handleFormDelete = (point) => {
