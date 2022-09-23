@@ -3,15 +3,17 @@ import {UpdateType} from '../const';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  #points = [];
-  #offers = [];
-  #destinations = [];
+
 
   constructor(pointsApiService) {
     super();
     this.#pointsApiService = pointsApiService;
 
   }
+
+  #points = [];
+  #offers = [];
+  #destinations = [];
 
   get points() {
     return this.#points;
@@ -36,7 +38,8 @@ export default class PointsModel extends Observable {
 
     } catch(err) {
       this.#points = [];
-
+      this.#offers = [];
+      this.#destinations = [];
     }
     this._notify(UpdateType.INIT);
   };
@@ -95,18 +98,25 @@ export default class PointsModel extends Observable {
   };
 
   getDestinationById(pointDestination) {
-    const destination = this.#destinations.find((it) => it.id === pointDestination);
-    return destination;
+    const destinations = this.#destinations.find((destination) => destination.id === pointDestination);
+    return destinations;
   }
 
-  getOffersById(point) {
-    const pointOffers = this.#offers.find((it) => it.type === point.type).offers;
-    const avaliableOffers = pointOffers.filter((it) => point.offers.includes(it.id));
-    return avaliableOffers;
+  getСheckedOffers(point) {
+    const offersByType = this.#offers.find((offer) => offer.type === point.type).offers;
+    const checkedOffers = offersByType.filter((offer) => point.offers.includes(offer.id));
+    return checkedOffers;
   }
+
+
+  getAllOffersByType(point) {
+    const offersByType = this.#offers.find((offer) => offer.type === point.type).offers;
+    return offersByType;
+  }
+
 
   getIdByDestination(destinationName) {
-    const {id} = this.#destinations.find((it) => it.name === destinationName);
+    const {id} = this.#destinations.find((destination) => destination.name === destinationName);
     return id;
   }
 

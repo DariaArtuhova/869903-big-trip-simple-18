@@ -2,6 +2,8 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {SORT_TYPES} from '../const';
 
 const createNewSortTemplate = (sorts) => ( `
+        <section class="trip-events">
+          <h2 class="visually-hidden">Trip events</h2>
          <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
             <div class="trip-sort__item  trip-sort__item--day">
               <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" data-sort-type=${SORT_TYPES.day} ${sorts === 'day' ? 'checked' : ''} >
@@ -28,6 +30,7 @@ const createNewSortTemplate = (sorts) => ( `
               <label class="trip-sort__btn" for="sort-offer">Offers</label>
             </div>
           </form>
+          </section>
 `);
 
 export default class SortView extends AbstractView{
