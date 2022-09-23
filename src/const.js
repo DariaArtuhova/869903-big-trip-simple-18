@@ -11,14 +11,14 @@ export const EVENT_TYPE = [
 ];
 
 export const FILTER_TYPES = {
-  everything: 'everything',
-  future: 'future',
-  past: 'past'
+  everything: 'EVERYTHING',
+  future: 'FUTURE',
+  past: 'PAST'
 };
 
 export const SORT_TYPES = {
-  day: 'day',
-  price: 'price',
+  day: 'DAY',
+  price: 'PRICE',
 };
 
 export const UserAction = {

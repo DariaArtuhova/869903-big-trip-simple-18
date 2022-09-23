@@ -23,7 +23,7 @@ const createChosenOffersTemplate = (offers) => {
 
 const createRoutePointTemplate = (pointModel, point) => {
   const {price, dateFrom, dateTo, type, hoursFrom, hoursTo} = point;
-  const offersArray = pointModel.getOffersById(point);
+  const checkedOffers = pointModel.getСheckedOffers(point);
   const destination = pointModel.getDestinationById(point.destination);
 
 
@@ -46,7 +46,7 @@ const createRoutePointTemplate = (pointModel, point) => {
                   &euro;&nbsp;<span class="event__price-value">${price ? price : ''}</span>
                 </p>
 
-${ createChosenOffersTemplate(offersArray) }
+${ createChosenOffersTemplate(checkedOffers) }
                 <button class="event__rollup-btn" type="button">
                   <span class="visually-hidden">Open event</span>
                 </button>

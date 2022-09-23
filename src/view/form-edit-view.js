@@ -10,41 +10,43 @@ export const BLANK_EVENT = {
   dateTo: new Date(),
   destination: 1,
   isFavorite: false,
-  offers: [1, 2, 3],
+  offers: [],
   type: 'taxi'
 };
 
-const createOffersTemplate = (offers) => {
+const createOffersTemplate = (offersByType, checkedOffers) => {
 
-  const template = offers.reduce((prev, cur, index) => prev.concat(`
-  <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${ index }" type="checkbox" name="event-offer-${ index }" checked>
-      <label class="event__offer-label" for="event-offer-${ index }">
-      <span class="event__offer-title">${ cur.title }</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${ cur.price }</span>
-    </label>
-  </div>`
-  ), '');
+  const isChecked = (offer) => checkedOffers.includes(offer.id);
+
+  const allOffersTemplate = offersByType
+    .map((offer) => (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox visually-hidden" id="event-offer-${ offer.id }" type="checkbox" name="event-offer-${ offer.id }" ${ isChecked(offer) ? 'checked' : '' }>
+          <label class="event__offer-label" for="event-offer-${ offer.id }">
+          <span class="event__offer-title">${ offer.title }</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${ offer.price }</span>
+        </label>
+      </div>`
+    ))
+    .join('');
 
   return `
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-      ${ template }
+      ${ allOffersTemplate }
     </div>
   </section>`;
 
 };
 
 const createDatalistTemplate = (destinations, destination) => {
-  const firstTemplate = `<option value="${ destination ? destination.name : '' }" selected>${ destination ? destination.name : '' }</option>`;
-  const secondTemplate = destinations
+  const template = destinations
     .filter((it) => it.name !== destination)
     .reduce((prev, cur) => prev.concat(`<option value="${ cur.name }">${ cur.name }</option>`), '');
-  const finalTemplate = firstTemplate + secondTemplate;
-  return finalTemplate;
+  return template;
 };
 
 const createTypeEditTemplate = (currentType) => EVENT_TYPE.map((type) =>
@@ -60,14 +62,16 @@ const createFormCreateTemplate = (pointModel, point) => {
     dateTo,
     price,
     type,
+    offers,
     isDisabled,
     isSaving,
     isDeleting,
   } = point;
+  console.log(offers.title)
 
   const isSubmitDisabled = isDisabled | !dateFrom | !dateTo | !type;
 
-  const offersArray = pointModel.getOffersById(point);
+  const allOffersByType = pointModel.getAllOffersByType(point);
   const destination = pointModel.getDestinationById(point.destination);
 
   const typeEditTemplate = createTypeEditTemplate(type);
@@ -103,8 +107,8 @@ const createFormCreateTemplate = (pointModel, point) => {
                     <label class="event__label  event__type-output" for="event-destination-1">
                     ${ type }
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text"  name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-${destination ? destination.id : ''}" >
-                    <datalist id="destination-list-${destination ? destination.id : ''}">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text"  name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-1" >
+                    <datalist id="destination-list-1">
 ${ createDatalistTemplate(destinations, destination) }
                     </datalist>
                   </div>
@@ -130,7 +134,7 @@ ${ createDatalistTemplate(destinations, destination) }
                 </header>
                 <section class="event__details">
 
-${ offersArray[0] ? createOffersTemplate(offersArray) : '' }
+              ${ allOffersByType[0] ? createOffersTemplate(allOffersByType, offers) : '' }
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${destination ? destination.description : '' }</p>
@@ -145,6 +149,7 @@ export default class FormEditView extends AbstractStatefulView {
   #pointModel;
   #startDatepicker = null;
   #endDatepicker = null;
+  #offers = null;
 
   constructor(pointModel, point = BLANK_EVENT) {
     super();
@@ -152,10 +157,12 @@ export default class FormEditView extends AbstractStatefulView {
     this._state = FormEditView.parsePointToState(point);
 
     this.#setInnerHandlers();
+    this.#offers = new Set(this._state.offers);
+
   }
 
   get template() {
-    return createFormCreateTemplate(this.#pointModel, this._state);
+    return createFormCreateTemplate(this.#pointModel, this._state, this.#offers);
   }
 
   removeElement = () => {
@@ -264,17 +271,42 @@ export default class FormEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#eventDestinationInputHandler);
 
+    this.element.querySelector('.event__details')
+      .addEventListener('change', this.#formOfferClickHandler);
+
+
     this.#setDatepicker();
   };
 
 
   #eventTypeToggleHandler = (evt) => {
     if (evt.target.tagName === 'INPUT') {
+      this.#offers.clear();
       this.updateElement({
-        type: evt.target.value
+        type: evt.target.value,
+        offers: []
       });
     }
   };
+
+  #formOfferClickHandler = (evt) => {
+    if (evt.target.tagName === 'INPUT') {
+      const pointId = evt.target.id;
+      const id = parseInt(pointId.match(/\d+/), 10);
+
+      if (this.#offers.has(id)) {
+        this.#offers.delete(id);
+        this._setState({
+          offers: Array.from(this.#offers)
+        });
+      } else {
+        this._setState({
+          offers: Array.from(this.#offers.add(id))
+        });
+      }
+    }
+  };
+
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();

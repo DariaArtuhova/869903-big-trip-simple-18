@@ -200,6 +200,7 @@ export default class ContentPresenter {
       this.#renderNoTask();
       return;
     }
+
     for (let i = 0; i < pointCount; i++) {
       this.#renderPoint(this.points[i]);
     }
