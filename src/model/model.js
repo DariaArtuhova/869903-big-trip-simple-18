@@ -98,8 +98,8 @@ export default class PointsModel extends Observable {
   };
 
   getDestinationById(pointDestination) {
-    const destination = this.#destinations.find((destination) => destination.id === pointDestination);
-    return destination;
+    const destinations = this.#destinations.find((destination) => destination.id === pointDestination);
+    return destinations;
   }
 
   getСheckedOffers(point) {

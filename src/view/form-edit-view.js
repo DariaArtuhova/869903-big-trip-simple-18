@@ -67,7 +67,6 @@ const createFormCreateTemplate = (pointModel, point) => {
     isSaving,
     isDeleting,
   } = point;
-  console.log(offers.title)
 
   const isSubmitDisabled = isDisabled | !dateFrom | !dateTo | !type;
 
