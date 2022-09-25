@@ -9,6 +9,7 @@ import {sortDate, sortPrice} from '../utils/sort';
 import {filter} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view';
+import {handleNewTaskButtonDisabled} from '../main';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -67,6 +68,7 @@ export default class ContentPresenter {
   createPoint = (callback) => {
     this.#currentSortType = SORT_TYPES.day;
     this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.everything);
+    remove(this.#noPointsBoard);
     this.#newPointPresenter.init(callback);
   };
 
@@ -141,6 +143,7 @@ export default class ContentPresenter {
   };
 
   #renderLoading = () => {
+    handleNewTaskButtonDisabled();
     render(this.#loadingComponent, this.#tripListComponent.element, RenderPosition.AFTERBEGIN);
   };
 
@@ -196,13 +199,13 @@ export default class ContentPresenter {
     const points = this.points;
     const pointCount = points.length;
 
+    for (let i = 0; i < pointCount; i++) {
+      this.#renderPoint(this.points[i]);
+    }
     if (pointCount === NO_TASKS) {
       this.#renderNoTask();
       return;
-    }
 
-    for (let i = 0; i < pointCount; i++) {
-      this.#renderPoint(this.points[i]);
     }
 
     this.#renderSort();
